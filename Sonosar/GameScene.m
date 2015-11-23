@@ -31,6 +31,8 @@
     UILabel*        startlabel;
     NSTimer*        mStartTimer;
     NSInteger       mStartupCounter;
+    
+    UIImage*        mScreeshot;
 }
 
 -(void)didMoveToView:(SKView *)view {
@@ -116,10 +118,7 @@
     {
         SKAction *action = [SKAction rotateByAngle:M_PI / 10 duration:0.5];
         
-        if ([mHands actionForKey:@"Pushing"])
-        {
-            [mHands removeActionForKey:@"Pushing"];
-        }
+        [mHands removeAllActions];
         [mHands runAction:action withKey:@"Pushing"];
         mPower.textColor = [UIColor redColor];
     }
@@ -168,6 +167,9 @@
         // If the user has won proceed to next lvl
         if (playerWon == TRUE)
         {
+            // Make a screenshot
+            [self takeScreenshot];
+            
             // Show the winner's dialuge
             mWinnerDialogue.hidden = NO;
             
@@ -217,10 +219,7 @@
     NSTimeInterval timeInterval = 2.f / mLevel;
     SKAction *action = [SKAction rotateByAngle: -M_PI / 10 duration:timeInterval];
     
-    if ([mHands actionForKey:@"SPushing"])
-    {
-        [mHands removeActionForKey:@"SPushing"];
-    }
+    [mHands removeAllActions];
     [mHands runAction:action withKey:@"SPushing"];
 }
 
@@ -380,7 +379,7 @@
     NSString* text= [NSString stringWithFormat:@"I beat Sonosar in %ld lvl", mLevel];
     //NSURL *myWebsite = [NSURL URLWithString:@"http://www.website.com/"];
     //  UIImage * myImage =[UIImage imageNamed:@"myImage.png"];
-    NSArray* sharedObjects=@[text/*,myWebsite*/];
+    NSArray* sharedObjects=@[text ,mScreeshot];
     UIActivityViewController * activityViewController=[[UIActivityViewController alloc]initWithActivityItems:sharedObjects applicationActivities:nil];
     
     activityViewController.popoverPresentationController.sourceView = self.view;
@@ -432,6 +431,14 @@
         // Start with level 1
         [self play:1];
     }
+}
+
+-(void)takeScreenshot
+{
+    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, NO, 1);
+    [self.view drawViewHierarchyInRect:self.view.bounds afterScreenUpdates:YES];
+    mScreeshot = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
 }
 
 @end
